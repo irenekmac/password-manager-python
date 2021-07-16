@@ -7,14 +7,17 @@ def write_key():
     with open("key.key", "wb") as key_file:
         key_file.write(key)'''
 
+# Load encrypted key
 def load_key():
     file = open("key.key", "rb")
     key = file.read()
     file.close()
     return key
 
-key = load_key()
 master_pwd = input("what is the master password? ")
+# encode() - takes string and change into bytes
+key = load_key() + master_pwd.encode()
+fer = Fernet(key)
 
 
 # Python function = 'def'
@@ -23,7 +26,7 @@ def view():
         for line in f.readlines():
             data = line.rstrip()
             user, passw = data.split("|")
-            print("User: ",user, ", Password: ", passw)
+            print("User: ",user, ", Password: ", str( fer.decrypt( passw.encode() ) ))
 
 
 # get user account and password and add into file
@@ -33,7 +36,7 @@ def add():
 
 # 'with' will automatically close the file - 'a' is a pen mode and edit, view or create new
     with open('passwords.txt', 'a') as f:
-        f.write(name + " | " + pwd + "\n")
+        f.write(name + " | " + str( fer.encrypt( pwd.encode() ) ) + "\n")
 
 
 while True:
